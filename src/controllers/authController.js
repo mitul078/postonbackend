@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken")
 
 exports.register = async (req, res) => {
 
-    const { username, email, password, role } = req.body
+    const { username, email, password } = req.body
 
     try {
         const checkUser = await User.findOne({ email })
@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
         }
 
         const user = await User.create({
-            username, email, password, role
+            username, email, password, role:"customer"
         })
 
         res.status(200).json({
@@ -23,7 +23,7 @@ exports.register = async (req, res) => {
         })
     } catch (error) {
         return res.status(500).json({
-            message: "Login Failed"
+            message: "Registered Failed"
         })
     }
 }

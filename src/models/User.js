@@ -4,10 +4,10 @@ const userSchema = mongoose.Schema({
     username: {type:String , required: true},
     email: {type:String , required:true , unique:true},
     password: {type:String , required:true  },
-    role:{
+    role: {
         type:String,
-        enum:['admin' , 'manager' , 'agent' , 'customer'],
-        default:'customer'
+        enum:['customer' , 'agent' , 'manager' , 'admin'],
+        default: 'customer'
     }
 } , {timestamps: true})
 

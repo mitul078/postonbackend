@@ -13,6 +13,7 @@ app.use("/api/auth", require("./routes/auth"))
 app.use("/api/customer" , require("./routes/customer"))
 app.use("/api/manager" , require("./routes/manager"))
 app.use("/api/agent" , require("./routes/agent"))
+app.use("/api/admin" , require("./routes/admin"))
 
 const { verifyToken, checkRole } = require("./middlewares/authMiddleware")
 app.get("/api/admin-only", verifyToken, checkRole("admin"), (req, res) => {
