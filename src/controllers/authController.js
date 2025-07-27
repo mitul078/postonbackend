@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
         }
 
         const user = await User.create({
-            username, email, password, role:"customer"
+            username, email, password, role: "customer"
         })
 
         res.status(200).json({
@@ -29,18 +29,18 @@ exports.register = async (req, res) => {
 }
 
 exports.login = async (req, res) => {
-    const {email , password} = req.body
+    const { email, password } = req.body
 
     try {
-        const user = await User.findOne({email})
+        const user = await User.findOne({ email })
 
-        if(!user) {
+        if (!user) {
             return res.status(404).json({
                 message: "User not found"
             })
         }
         const checkPass = user.password === password
-        if(!checkPass) {
+        if (!checkPass) {
             return res.status(401).json({
                 message: "Invalid Password"
             })
@@ -49,12 +49,12 @@ exports.login = async (req, res) => {
         const token = jwt.sign({
             id: user._id,
             role: user.role
-        } , process.env.JWT_SECRET)
+        }, process.env.JWT_SECRET)
 
-        res.cookie("token" , token)
+        res.cookie("token", token)
 
         res.status(200).json({
-            user: { id: user._id, role: user.role, email: user.email }
+            message: "User Login successfully"
         })
 
 
@@ -62,6 +62,30 @@ exports.login = async (req, res) => {
         return res.status(500).json({
             message: "Login Failed"
         })
-        
+    }
+}
+
+exports.me = async (req, res) => {
+    const { token } = req.cookies;
+
+    if (!token) {
+        return res.status(401).json({
+            message: "Unauthorized"
+        });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const user = await User.findById(decoded.id).select("-password");
+
+        return res.status(200).json({
+            user
+        });
+
+    } catch (error) {
+        return res.status(401).json({
+            message: "Invalid token"
+        })
     }
 }

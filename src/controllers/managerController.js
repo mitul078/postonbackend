@@ -6,7 +6,6 @@ exports.assignAgent = async (req, res) => {
     const { packageID, agentID } = req.body
 
     try {
-
         const agent = await User.findOne({ _id: agentID, role: "agent" })
         if (!agent) return res.status(400).json({ message: "Invalid Agent" })
 
@@ -26,9 +25,12 @@ exports.assignAgent = async (req, res) => {
             statusUpdate: []
         })
 
-        packageData.currentStatus = "assigned"
-        await packageData.save()
-
+        await Package.findByIdAndUpdate(packageID , {
+            currentStatus: "Assigned",
+            assignedAgentInfo: agentID,
+            expectedDelivery: new Date(Date.now() + 3 * 24 * 60 *60  *1000) //3Days
+        })
+        
         res.status(200).json({
             message: "Assigned to an agent Successfully"
             ,assignment

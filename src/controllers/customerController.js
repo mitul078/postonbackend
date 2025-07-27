@@ -24,7 +24,10 @@ exports.placeOrder = async (req, res) => {
 exports.getOrder = async (req, res) => {
     try {
         const customerId = req.user.id
-        const orders = await Package.find({ customerID: customerId }).sort({ createdAt: -1 })
+        const orders = await Package.find({ customerID: customerId }).sort({ createdAt: -1 }).populate("assignedAgentInfo", "username email")
+
+
+
 
         res.status(200).json({
             message: "Fetched Successfully",
