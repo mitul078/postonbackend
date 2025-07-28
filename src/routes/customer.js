@@ -1,10 +1,11 @@
 const express = require("express")
 const router = express.Router()
+const multer = require("multer")
 const {verifyToken , checkRole} = require("../middlewares/authMiddleware")
 const {placeOrder, getOrder} = require("../controllers/customerController")
 
-
-router.post("/make-order" , verifyToken , checkRole('customer') , placeOrder )
-router.get("/get-orders" , verifyToken , checkRole("customer") , getOrder)
+const upload = multer({storage: multer.memoryStorage()})
+router.post("/order" , verifyToken , checkRole('customer') , upload.single("productImage") , placeOrder )
+router.get("/order" , verifyToken , checkRole("customer") , getOrder)
 
 module.exports = router

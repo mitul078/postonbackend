@@ -18,6 +18,23 @@ const packageSchema = mongoose.Schema({
         type: Date,
         default: null
     },
+    productName: {
+        type: String,
+        required: true,
+
+    },
+    productImage: {
+        type:String,
+        require:true
+    },
+    customerContact:{
+        type:Number,
+        required:true
+    },
+    customerPinCode:{
+        type:Number,
+        required:true
+    },
     createdAt: {
         type: Date,
         default: Date.now
