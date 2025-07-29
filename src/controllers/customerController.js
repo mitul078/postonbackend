@@ -1,31 +1,36 @@
 
 const Package = require("../models/Package")
-const imagekit = require("../lib/imagekit")
+const Cart = require("../models/Cart")
 
 exports.placeOrder = async (req, res) => {
-    const { origin, destination, productName , customerContact , customerPinCode } = req.body
     const customerID = req.user.id
-    const file = req.file
-
+    const { origin, destination, customerContact, customerPinCode, selectedItems } = req.body
     try {
-        let imageUrl = null;
-        if (file) {
-            const uploadResponse = await imagekit.upload({
-                file: file.buffer,
-                fileName: `${Date.now()}_${file.originalname}`,
-                folder: "PostOn-proofs",
-            });
-            imageUrl = uploadResponse.url;
+        const cart = await Cart.findOne({ customerID })
+        if (!cart || cart.items.length === 0) {
+            return res.status(400).json({ message: "Cart is empty" });
         }
 
-        const order = await Package.create({
-            customerID, origin, destination, productName, productImage: imageUrl , customerContact , customerPinCode
-        })
+        if (!selectedItems || selectedItems.length === 0) {
+            return res.status(400).json({ message: "No items selected." });
+        }
 
-        if (!origin || !destination || !productName , !customerContact , !customerPinCode) {
+        if (!origin || !destination || !customerContact || !customerPinCode) {
             return res.status(400).json({
                 message: "All fields are required"
             });
+        }
+
+        const order = await Package.create({
+            customerID, origin, destination, customerContact, customerPinCode, products: selectedItems
+        })
+
+        if (cart) {
+            cart.items = cart.items.filter(
+                (item) =>
+                    !selectedItems.find((sel) => sel.product === item.product.toString())
+            );
+            await cart.save();
         }
 
         res.status(200).json({

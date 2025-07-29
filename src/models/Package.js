@@ -9,6 +9,15 @@ const packageSchema = mongoose.Schema({
         enum: ['pending', 'assigned', 'in-transit', 'delivered'],
         default: 'pending'
     },
+
+    products: [{
+        product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true }
+        , quantity: Number
+    }
+    ],
+
+    productImage: [String],
+
     assignedAgentInfo: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -18,22 +27,13 @@ const packageSchema = mongoose.Schema({
         type: Date,
         default: null
     },
-    productName: {
-        type: String,
-        required: true,
-
+    customerContact: {
+        type: Number,
+        required: true
     },
-    productImage: {
-        type:String,
-        require:true
-    },
-    customerContact:{
-        type:Number,
-        required:true
-    },
-    customerPinCode:{
-        type:Number,
-        required:true
+    customerPinCode: {
+        type: Number,
+        required: true
     },
     createdAt: {
         type: Date,
