@@ -12,16 +12,16 @@ exports.addToCart = async (req, res) => {
         if (!cart) {
             cart = await Cart.create({
                 customerID, items: [{
-                    product: productID, quantity
+                    productId: productID, quantity
                 }]
             })
         } else {
-            const itemIndex = cart.items.findIndex(item => item.product.toString() === productID)
+            const itemIndex = cart.items.findIndex(item => item.productId.toString() === productID)
 
             if (itemIndex > -1) {
                 cart.items[itemIndex].quantity += quantity;
             } else {
-                cart.items.push({ product: productID, quantity });
+                cart.items.push({ productId: productID, quantity });
             }
 
             await cart.save()
@@ -94,7 +94,7 @@ exports.getCheckoutDetail = async (req, res) => {
 exports.seeCart = async (req, res) => {
     const customerID = req.user.id
     try {
-        const cart = await Cart.findOne({ customerID }).populate("items.product")
+        const cart = await Cart.findOne({ customerID }).populate("items.productId")
         if (!cart) {
             return res.status(404).json({ message: "Cart is empty" });
         }
