@@ -118,7 +118,7 @@ exports.remove = async (req, res) => {
         const cart = await Cart.findOne({ customerID })
         if (!cart) return res.status(400).json({ message: "Cart not found" })
 
-        cart.items = cart.items.filter(item => item.product.toString() !== pid)
+        cart.items = cart.items.filter(item => item.productId.toString() !== pid)
         await cart.save()
         res.status(200).json({ message: "Item removed successfully", cart });
     } catch (error) {
