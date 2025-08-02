@@ -1,42 +1,45 @@
 
 const Package = require("../models/Package")
-const Cart = require("../models/Cart")
+const checkoutSession = require("../models/checkoutSession");
 
 exports.placeOrder = async (req, res) => {
-    const customerID = req.user.id
-    const { origin, destination, customerContact, customerPinCode, selectedItems } = req.body
+    const customerID = req.user.id;
+    const { customerName, customerAddress, customerContact, customerPinCode , customerEmail  } = req.body;
+
+
     try {
-        const cart = await Cart.findOne({ customerID })
-        if (!cart || cart.items.length === 0) {
-            return res.status(400).json({ message: "Cart is empty" });
+        const session = await checkoutSession.findOne({ customerID })
+
+        if (!session) return res.status(400).json({ message: "Session Is Expired" })
+
+        if ( !customerContact || !customerPinCode || !customerName || !customerAddress || !customerEmail) {
+            return res.status(400).json({ message: "All delivery fields are required" });
         }
 
-        if (!selectedItems || selectedItems.length === 0) {
-            return res.status(400).json({ message: "No items selected." });
-        }
-
-        if (!origin || !destination || !customerContact || !customerPinCode) {
-            return res.status(400).json({
-                message: "All fields are required"
-            });
-        }
+        const items = session.productWithQuantity.map(p => ({
+            productId: p.productId,
+            quantity: p.quantity
+        }));
 
         const order = await Package.create({
-            customerID, origin, destination, customerContact, customerPinCode, products: selectedItems
-        })
+            customerID,
+            customerName,
+            customerAddress,
+            customerContact,
+            customerPinCode,
+            customerEmail,
+            items,
+            subtotal: session.subtotal,
+            cartTotal: session.cartTotal,
+            tax: session.tax
+        });
 
-        if (cart) {
-            cart.items = cart.items.filter(
-                (item) =>
-                    !selectedItems.find((sel) => sel.product === item.product.toString())
-            );
-            await cart.save();
-        }
+        await checkoutSession.deleteOne({ customerID });
 
         res.status(200).json({
             message: "Order Placed Successfully",
-            order: order
-        })
+            order
+        });
 
     } catch (error) {
         console.error("Error placing order:", error);
@@ -45,7 +48,7 @@ exports.placeOrder = async (req, res) => {
             error: error.message
         });
     }
-}
+};
 exports.getOrder = async (req, res) => {
     try {
         const customerId = req.user.id

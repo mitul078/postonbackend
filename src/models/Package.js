@@ -2,21 +2,20 @@ const mongoose = require("mongoose")
 
 const packageSchema = mongoose.Schema({
     customerID: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    origin: { type: String, required: true },
-    destination: { type: String, required: true },
     currentStatus: {
         type: String,
         enum: ['pending', 'assigned', 'in-transit', 'delivered'],
         default: 'pending'
     },
 
-    products: [{
+    items: [{
         product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true }
         , quantity: Number
     }
     ],
-
-    productImage: [String],
+    subtotal: { type: Number },
+    cartTotal: { type: Number },
+    tax: { type: Number },
 
     assignedAgentInfo: {
         type: mongoose.Schema.Types.ObjectId,
@@ -33,6 +32,18 @@ const packageSchema = mongoose.Schema({
     },
     customerPinCode: {
         type: Number,
+        required: true
+    },
+    customerEmail: {
+        type: String,
+        required: true
+    },
+    customerAddress: {
+        type: String,
+        required: true
+    },
+    customerName: {
+        type: String,
         required: true
     },
     createdAt: {
