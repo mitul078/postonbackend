@@ -46,6 +46,10 @@ const packageSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    deliveredAt: {
+        type:Date,
+        default: null
+    },
     createdAt: {
         type: Date,
         default: Date.now

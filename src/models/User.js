@@ -8,6 +8,11 @@ const userSchema = mongoose.Schema({
         type:String,
         enum:['customer' , 'agent' , 'manager' , 'admin'],
         default: 'customer'
+    },
+    dutyStatus: {
+        type: String,
+        enum: ["free" , "on-duty"],
+        default: "free"
     }
 } , {timestamps: true})
 

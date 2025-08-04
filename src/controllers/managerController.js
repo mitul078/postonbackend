@@ -30,6 +30,7 @@ exports.assignAgent = async (req, res) => {
             expectedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) //3Days
         })
 
+        await User.findByIdAndUpdate(agentID , {dutyStatus : "on-duty"})
         res.status(200).json({
             message: "Assigned to an agent Successfully"
             , assignment
@@ -44,7 +45,7 @@ exports.assignAgent = async (req, res) => {
 
 exports.pendingOrders = async (req, res) => {
     try {
-        const orders = await Package.find({ currentStatus: "pending" }).select("customerID origin destination ")
+        const orders = await Package.find({ currentStatus: "pending" }).select("customerID customerAddress createdAt ")
         if (orders.length === 0) {
             res.status(404).json({
                 message: "No Orders Pending"
@@ -84,7 +85,7 @@ exports.assignedOrders = async (req, res) => {
 exports.allAgents = async (req, res) => {
     try {
 
-        const agents = await User.find({ role: "agent" }).select("username email role")
+        const agents = await User.find({ role: "agent" }).select("username email role dutyStatus")
         res.status(200).json({
             message: "All Agents Fetched",
             agents
