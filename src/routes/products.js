@@ -4,6 +4,6 @@ const router = express.Router()
 const { verifyToken, checkRole } = require("../middlewares/authMiddleware")
 const { getProducts } = require("../controllers/productController")
 
-router.get("/products" , verifyToken , checkRole("customer") , getProducts)
+router.get("/products" , verifyToken , checkRole("customer" , "agent") , getProducts)
 
 module.exports = router

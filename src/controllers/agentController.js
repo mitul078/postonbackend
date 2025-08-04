@@ -8,8 +8,10 @@ exports.getOrders = async(req , res) =>{
         const agentId = req.user.id
         
         const orders = await deliveryAssign.find({agentID: agentId})
-        .populate("packageID")
-        .populate("agentID" , "username email")
+        .populate({
+            path: "packageID",
+            select: "customerStatus items customerName customerAddress customerContact expectedDelivery  subtotal"
+        })
 
         res.status(200).json({
             message: "Orders fetched"
